@@ -13,14 +13,8 @@ export class AuthorService {
   ) {}
 
   async create(createAuthorDto: CreateAuthorDto) {
-    try {
-      const newAuthor = this.authorRepository.create(createAuthorDto);
-      await this.authorRepository.save(newAuthor);
-
-      return newAuthor;
-    } catch (error) {
-      throw error;
-    }
+    const newAuthor = this.authorRepository.create(createAuthorDto);
+    return await this.authorRepository.save(newAuthor);
   }
 
   async findAll() {
@@ -28,23 +22,23 @@ export class AuthorService {
   }
 
   async findOne(id: number) {
-    const findAuthor = await this.authorRepository.findOneBy({ id });
-    if (!findAuthor) {
+    const foundAuthor = await this.authorRepository.findOneBy({ id });
+    if (!foundAuthor) {
       throw new NotFoundException(
         `Sorry, we could not find the ${this.authorRepository.metadata.tableName} with the ID ${id}. Please, try again with a valid ID`,
       );
     }
-    return findAuthor;
+    return foundAuthor;
   }
 
   async update(id: number, updateAuthorDto: UpdateAuthorDto) {
-    const findAuthor = await this.findOne(id);
-    const author = { ...findAuthor, ...updateAuthorDto };
+    const foundAuthor = await this.findOne(id);
+    const author = { ...foundAuthor, ...updateAuthorDto };
     return await this.authorRepository.save(author);
   }
 
   async remove(id: number) {
-    const findAuthor = await this.findOne(id);
-    return await this.authorRepository.softRemove(findAuthor);
+    const foundAuthor = await this.findOne(id);
+    return await this.authorRepository.softRemove(foundAuthor);
   }
 }
