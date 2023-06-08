@@ -13,6 +13,12 @@ export class GenreService {
   ) {}
 
   async create(createGenreDto: CreateGenreDto) {
+    const foundName = await this.findByName(createGenreDto.name);
+    if (foundName) {
+      throw new NotFoundException(
+        `Sorry, we found a record with the name ${createGenreDto.name}. Please, try again with a valid name`,
+      );
+    }
     const newGenre = this.genreRepository.create(createGenreDto);
     return await this.genreRepository.save(newGenre);
   }
@@ -46,6 +52,10 @@ export class GenreService {
       );
     }
     return foundGenre;
+  }
+
+  async findByName(name: string) {
+    return await this.genreRepository.findOneBy({ name });
   }
 
   async update(id: number, updateGenreDto: UpdateGenreDto) {
