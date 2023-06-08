@@ -6,6 +6,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Author } from './modules/author/entities/author.entity';
 import { GenreModule } from './modules/genre/genre.module';
 import { Genre } from './modules/genre/entities/genre.entity';
+import { BookModule } from './modules/book/book.module';
+import { Book } from './modules/book/entities/book.entity';
 
 @Module({
   imports: [
@@ -15,11 +17,12 @@ import { Genre } from './modules/genre/entities/genre.entity';
       username: 'root',
       password: '',
       database: 'nestjs_book_api',
-      entities: [Author, Genre],
+      entities: [Author, Genre, Book],
       synchronize: true,
     }),
     AuthorModule,
     GenreModule,
+    BookModule,
   ],
   controllers: [AppController],
   providers: [AppService],

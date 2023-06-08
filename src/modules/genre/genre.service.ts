@@ -22,7 +22,24 @@ export class GenreService {
   }
 
   async findOne(id: number) {
-    const foundGenre = await this.genreRepository.findOneBy({ id });
+    const foundGenre = await this.genreRepository.findOne({
+      where: { id },
+      relations: { books: true },
+      select: {
+        id: true,
+        name: true,
+        created_at: true,
+        updated_at: true,
+        deleted_at: true,
+        books: {
+          id: true,
+          title: true,
+          created_at: true,
+          updated_at: true,
+          deleted_at: true,
+        }
+      }
+    });
     if (!foundGenre) {
       throw new NotFoundException(
         `Sorry, we could not find the ${this.genreRepository.metadata.tableName} with the ID ${id}. Please, try again with a valid ID`,
@@ -39,6 +56,8 @@ export class GenreService {
 
   async remove(id: number) {
     const foundGenre = await this.findOne(id);
+    const genre = { ...foundGenre, active: false };
+    await this.update(id, genre);
     return await this.genreRepository.softRemove(foundGenre);
   }
 }

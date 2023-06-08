@@ -22,7 +22,32 @@ export class AuthorService {
   }
 
   async findOne(id: number) {
-    const foundAuthor = await this.authorRepository.findOneBy({ id });
+    const foundAuthor = await this.authorRepository.findOne({
+      where: { id },
+      relations: { books: { genre: true } },
+      select: {
+        id: true,
+        first_name: true,
+        last_name: true,
+        created_at: true,
+        updated_at: true,
+        deleted_at: true,
+        books: {
+          id: true,
+          title: true,
+          created_at: true,
+          updated_at: true,
+          deleted_at: true,
+          genre: {
+            id: true,
+            name: true,
+            created_at: true,
+            updated_at: true,
+            deleted_at: true,
+          }
+        }
+      }
+    });
     if (!foundAuthor) {
       throw new NotFoundException(
         `Sorry, we could not find the ${this.authorRepository.metadata.tableName} with the ID ${id}. Please, try again with a valid ID`,
@@ -39,6 +64,8 @@ export class AuthorService {
 
   async remove(id: number) {
     const foundAuthor = await this.findOne(id);
+    const author = { ...foundAuthor, active: false };
+    await this.update(id, author);
     return await this.authorRepository.softRemove(foundAuthor);
   }
 }
