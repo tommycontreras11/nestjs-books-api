@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 import { Book } from './entities/book.entity';
@@ -16,6 +16,13 @@ export class BookService {
   ) {}
 
   async create(createBookDto: CreateBookDto) {
+    const foundTitle = await this.findByTitle(createBookDto.title);
+    if (foundTitle) {
+      throw new BadRequestException(
+        `Sorry, we found a record with the title ${createBookDto.title}. Please, try again with a valid title`,
+      );
+    }
+
     const foundAuthor = await this.authorService.findOne(+createBookDto.author);
     if (!foundAuthor) {
       throw new NotFoundException(
@@ -71,6 +78,10 @@ export class BookService {
       );
     }
     return foundBook;
+  }
+
+  async findByTitle(title: string) {
+    return await this.bookRepository.findOneBy({ title });
   }
 
   async update(id: number, updateBookDto: UpdateBookDto) {

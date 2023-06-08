@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateGenreDto } from './dto/create-genre.dto';
 import { UpdateGenreDto } from './dto/update-genre.dto';
 import { Genre } from './entities/genre.entity';
@@ -15,7 +15,7 @@ export class GenreService {
   async create(createGenreDto: CreateGenreDto) {
     const foundName = await this.findByName(createGenreDto.name);
     if (foundName) {
-      throw new NotFoundException(
+      throw new BadRequestException(
         `Sorry, we found a record with the name ${createGenreDto.name}. Please, try again with a valid name`,
       );
     }
