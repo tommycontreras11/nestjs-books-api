@@ -3,9 +3,9 @@ import { Column, Entity } from 'typeorm';
 
 @Entity({ name: 'author' })
 export class Author extends CommonEntity {
-  @Column({ type: 'string', length: 256 })
+  @Column({ length: 256, name: 'first_name' })
   first_name: string;
 
-  @Column({ type: 'string', length: 256 })
+  @Column({ length: 256, name: 'last_name' })
   last_name: string;
 }

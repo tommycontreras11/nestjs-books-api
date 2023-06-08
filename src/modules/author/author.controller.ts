@@ -1,15 +1,38 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { AuthorService } from './author.service';
 import { CreateAuthorDto } from './dto/create-author.dto';
 import { UpdateAuthorDto } from './dto/update-author.dto';
+import { CreateAuthorResponseDto } from './dto/create-author-response.dto';
+import { ApiTags } from '@nestjs/swagger';
 
-@Controller('author')
+@Controller('api/v1/author')
+@ApiTags('Author')
 export class AuthorController {
   constructor(private readonly authorService: AuthorService) {}
 
   @Post()
-  create(@Body() createAuthorDto: CreateAuthorDto) {
-    return this.authorService.create(createAuthorDto);
+  async create(@Body() createAuthorDto: CreateAuthorDto) {
+    const createAuthorResponseDto = new CreateAuthorResponseDto();
+    try {
+      const newAuthor = await this.authorService.create(createAuthorDto);
+
+      createAuthorResponseDto.success = true;
+      createAuthorResponseDto.message = 'The author was succesfully created';
+      createAuthorResponseDto.author = newAuthor;
+    } catch (error) {
+      createAuthorResponseDto.success = false;
+      createAuthorResponseDto.message = error;
+    }
+
+    return createAuthorResponseDto;
   }
 
   @Get()
@@ -23,8 +46,23 @@ export class AuthorController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAuthorDto: UpdateAuthorDto) {
-    return this.authorService.update(+id, updateAuthorDto);
+  async update(
+    @Param('id') id: string,
+    @Body() updateAuthorDto: UpdateAuthorDto,
+  ) {
+    const createAuthorResponseDto = new CreateAuthorResponseDto();
+    try {
+      const newAuthor = await this.authorService.update(+id, updateAuthorDto);
+
+      createAuthorResponseDto.success = true;
+      createAuthorResponseDto.message = 'The author was succesfully updated';
+      createAuthorResponseDto.author = newAuthor;
+    } catch (error) {
+      createAuthorResponseDto.success = false;
+      createAuthorResponseDto.message = error;
+    }
+
+    return createAuthorResponseDto;
   }
 
   @Delete(':id')
